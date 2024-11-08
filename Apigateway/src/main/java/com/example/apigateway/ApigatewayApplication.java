@@ -7,7 +7,6 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 
-
 @EnableDiscoveryClient
 @SpringBootApplication
 public class ApigatewayApplication {
@@ -16,15 +15,12 @@ public class ApigatewayApplication {
         SpringApplication.run(ApigatewayApplication.class, args);
     }
 
+    // Define the route for the API Gateway
     @Bean
-    public RouteLocator gatewayRoutes(RouteLocatorBuilder builder){
-
+    public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("Candidat", r->r.path("/candidats/**")
-                        .uri("http://localhost:8080"))
-
-                .route("job-s", r->r.path("/jobs/**")
-                        .uri("http://localhost:8082"))
+                .route("inscription_event", r -> r.path("/inscriptions/**")
+                        .uri("http://localhost:8080"))  // Change this URL to your actual service
                 .build();
     }
 }
