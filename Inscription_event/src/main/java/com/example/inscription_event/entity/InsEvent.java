@@ -11,7 +11,7 @@ public class InsEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idIns;
+    private Long idIns;  // Utilisation de Long pour permettre les valeurs nulles
 
     @Column(name = "nom_event", nullable = false)
     private String nomEvent;
@@ -32,11 +32,11 @@ public class InsEvent {
     }
 
     // Getters et setters
-    public long getIdIns() {
+    public Long getIdIns() {  // Utilisation de Long pour correspondre au type de la variable
         return idIns;
     }
 
-    public void setIdIns(long idIns) {
+    public void setIdIns(Long idIns) {
         this.idIns = idIns;
     }
 
