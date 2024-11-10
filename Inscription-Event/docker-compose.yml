@@ -1,50 +1,48 @@
-version: "3.8"
+version: "2.2"
 
 services:
-  mysqldb:
-    image: mysql:5.7
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: inscription
+  job-service:
+    container_name: job-service
+    image: "job-service"
+    build: ./MS-job
     ports:
-      - "3306:3306"
-    volumes:
-      - db:/var/lib/mysql
-    networks:
-      mynetwork:
-
-  inscription-app:
+      - "8082:8082"
+    hostname: job-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://docker-mysql:3306/DBJobs?autoReconnect=true&useSSL=false
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
     depends_on:
-      - mysqldb
-    image: wassimmanai/inscridocker
-    restart: on-failure
+      - discovery-service
+      - docker-mysql
+
+  docker-mysql:
+    image: "mysql:5.6"
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_DATABASE=admin
+    ports:
+      - "3308:3306"
+
+  inscription-service:
+    container_name: inscription-service
+    image: "wassimmanai/inscridocker"
+    build: ./Inscription-Event
     ports:
       - "8077:8077"
+    hostname: inscription-service
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/inscription?autoReconnect=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=admin
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATASOURCE_URL=jdbc:mysql://docker-mysql:3306/inscription?createDatabaseIfNotExist=true
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-    stdin_open: true
-    tty: true
-    networks:
-      mynetwork:
+    depends_on:
+      - discovery-service
+      - docker-mysql
 
   discovery-service:
     container_name: discovery-service
-    build: ./Eureka-Server
+    build: ./Eureka
     ports:
       - "8761:8761"
+    hostname: eureka
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-    networks:
-      mynetwork:
 
-volumes:
-  db:
-
-networks:
-  mynetwork:
-    driver: bridge

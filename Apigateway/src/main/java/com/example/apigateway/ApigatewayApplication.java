@@ -19,8 +19,8 @@ public class ApigatewayApplication {
     @Bean
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("inscription_event", r -> r.path("/inscriptions/**")
-                        .uri("http://localhost:8080"))  // Change this URL to your actual service
+                .route("InsEvent", r -> r.path("/insEvents/**")
+                        .uri("http://localhost:8077"))  // Change this URL to your actual service
                 .build();
     }
 }
