@@ -1,48 +1,42 @@
-version: "2.2"
-
+version: '3'
 services:
-  job-service:
-    container_name: job-service
-    image: "job-service"
-    build: ./MS-job
-    ports:
-      - "8082:8082"
-    hostname: job-service
+  mysqldb:
+    image: mysql:latest
+    restart: unless-stopped
+    container_name: mysqldb
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://docker-mysql:3306/DBJobs?autoReconnect=true&useSSL=false
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inscription
+    ports:
+      - "3306:3306"
+    networks:
+      - myappNetwork
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  # Spring Boot service
+  springboot-app:
+    image: wassimmanai/app:latest
+    restart: on-failure
+    ports:
+      - "8086:8086"
     depends_on:
-      - discovery-service
-      - docker-mysql
-
-  docker-mysql:
-    image: "mysql:5.6"
+      - mysqldb
+    networks:
+      - myappNetwork
     environment:
-      - MYSQL_ROOT_PASSWORD=admin
-      - MYSQL_DATABASE=admin
-    ports:
-      - "3308:3306"
+      SPRING_APPLICATION_JSON: '{
+            "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/inscription?createDatabaseIfNotExist=true",
+            "spring.datasource.username" : "root",
+            "spring.datasource.password" : "root",
+            "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQLDialect",
+            "spring.jpa.hibernate.ddl-auto" : "update"
+          }'
+      stdin_open: true
+      tty: true
 
-  inscription-service:
-    container_name: inscription-service
-    image: "wassimmanai/inscridocker"
-    build: ./Inscription-Event
-    ports:
-      - "8077:8077"
-    hostname: inscription-service
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://docker-mysql:3306/inscription?createDatabaseIfNotExist=true
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-    depends_on:
-      - discovery-service
-      - docker-mysql
+networks:
+  myappNetwork:
 
-  discovery-service:
-    container_name: discovery-service
-    build: ./Eureka
-    ports:
-      - "8761:8761"
-    hostname: eureka
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-
+volumes:
+  mysql-data:

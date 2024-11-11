@@ -1,4 +1,4 @@
 FROM openjdk:17
-EXPOSE 8086
+EXPOSE 8051
 ADD target/*.jar app.jar
 ENTRYPOINT ["java","-jar","app.jar"]
