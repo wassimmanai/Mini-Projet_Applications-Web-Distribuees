@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  discovery-server:
+    build: ./eureka
+    ports:
+      - "8761:8761"
+    restart: always
+    networks:
+      - app-network
+    environment:
+      - EUREKA_SERVER=http://discovery-server:8761/eureka/
+
+ 
+  api-gateway:
+    container_name: api-gateway
+    build: ./api-gateway
+    ports:
+      - "8099:8099"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+    networks:
+      - app-network    
+ 
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  quiz-db-data: 
+    driver: local
+  inscription-db-data: 
+    driver: local
+  forum-db-data:
+    driver: local
+  keycloak_data:
+    driver: local
+  postgres:

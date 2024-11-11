@@ -1,0 +1,67 @@
+server:
+  port: 8099
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      routes:
+        - id: python-microservice
+          uri: lb://python-microservice
+          predicates:
+            - Path=/python-microservice/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - PreserveHostHeader=true
+
+        - id: microservice-quiz
+          uri: lb://microservice-quiz
+          predicates:
+            - Path=/microservice-quiz/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - PreserveHostHeader=true
+
+        - id: microservice-inscriptions
+          uri: lb://microservice-inscriptions
+          predicates:
+            - Path=/microservice-inscriptions/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - PreserveHostHeader=true
+
+        - id: microservice-forum
+          uri: lb://microservice-forum
+          predicates:
+            - Path=/microservice-forum/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - PreserveHostHeader=true
+
+
+
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: "http://localhost:9090/realms/group-six-cleubs"
+          #jwk-set-uri: http://localhost:9090/realms/group-six-cleubs/protocol/openid-connect/certs
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security.oauth2: DEBUG
+
+eureka:
+  client:
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
