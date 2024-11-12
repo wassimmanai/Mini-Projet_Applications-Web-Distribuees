@@ -23,13 +23,49 @@ services:
       - discovery-server
     networks:
       - app-network    
- 
+
+  mysqldb:
+    image: mysql:latest
+    restart: unless-stopped
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inscription
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network   # Changed to consistent network name
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  # Spring Boot service
+  springboot-app:
+    image: wassimmanai/app:latest
+    restart: on-failure
+    ports:
+      - "8086:8086"
+    depends_on:
+      - discovery-server
+      - mysqldb
+    networks:
+      - app-network   # Changed to consistent network name
+    environment:
+      SPRING_APPLICATION_JSON: '{
+            "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/inscription?createDatabaseIfNotExist=true",
+            "spring.datasource.username" : "root",
+            "spring.datasource.password" : "root",
+            "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQLDialect",
+            "spring.jpa.hibernate.ddl-auto" : "update",
+            "eureka.client.serviceUrl.defaultZone": "http://discovery-server:8761/eureka"
+          }'
+      stdin_open: true
+      tty: true
 
 networks:
-  app-network:
-    driver: bridge
+  app-network:    # Consistent network name used here
 
 volumes:
+  mysql-data:
   quiz-db-data: 
     driver: local
   inscription-db-data: 
@@ -39,3 +75,4 @@ volumes:
   keycloak_data:
     driver: local
   postgres:
+    driver: local 
