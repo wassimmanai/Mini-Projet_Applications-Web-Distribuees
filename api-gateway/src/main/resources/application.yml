@@ -50,7 +50,7 @@ spring:
     oauth2:
       resource-server:
         jwt:
-          issuer-uri: "http://localhost:9090/realms/group-six-cleubs"
+          issuer-uri: "http://localhost:8080/realms/group-six-cleubs"
           #jwk-set-uri: http://localhost:9090/realms/group-six-cleubs/protocol/openid-connect/certs
 
 
