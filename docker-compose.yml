@@ -60,6 +60,24 @@ services:
           }'
       stdin_open: true
       tty: true
+  
+  
+   
+  microservice-forum:
+    restart: on-failure
+    container_name: microservice-forum
+    build: ./microservice-forum
+    ports:
+      - "8094:8094"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    networks:
+      - app-network
+    depends_on:
+      - discovery-server
+    volumes:
+      - forum-db-data:/app/Database/Data
+    
 
   events:
     restart: on-failure
@@ -92,6 +110,41 @@ services:
     volumes:
       - keycloak_data:/opt/keycloak/data
 
+
+  postgresql:
+    container_name: postgresql
+    image: postgres
+    environment:
+      POSTGRES_USER: houssemino
+      POSTGRES_PASSWORD: houssemino
+      POSTGRES_DB: product_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+
+  python-microservice:
+    build: ./news
+    volumes:
+      - ./news:/usr/src/app
+    ports:
+      - "5001:5001"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8671/eureka/
+      - POSTGRES_USER=houssemino
+      - POSTGRES_PASSWORD=houssemino
+      - POSTGRES_DB=product_db
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PORT=5432
+    networks:
+      - app-network
+    depends_on:
+      - postgresql
 
 
 networks:

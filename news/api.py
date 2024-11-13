@@ -70,7 +70,7 @@ api.add_resource(ProductDelete, '/products/<int:product_id>')
 # Eureka Client setup
 your_rest_server_port = 5001
 eureka_client.init(
-    eureka_server=os.getenv('EUREKA_SERVER', 'http://discovery-server:8090/eureka'),
+    eureka_server=os.getenv('EUREKA_SERVER', 'http://discovery-server:8761/eureka'),
     app_name="python-microservice",
     instance_port=your_rest_server_port
 )
