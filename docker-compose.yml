@@ -77,6 +77,21 @@ services:
       - discovery-server
     volumes:
       - forum-db-data:/app/Database/Data
+
+  microservice-event:
+    restart: on-failure
+    container_name: microservice-event
+    build: ./microservice-quiz
+    ports:
+      - "8025:8025"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8090/eureka/
+    networks:
+      - app-network
+    depends_on:
+      - discovery-server
+    volumes:
+      - quiz-db-data:/app/Database/Data
     
 
   events:
@@ -160,6 +175,8 @@ volumes:
     driver: local
   forum-db-data:
     driver: local
+  event-db-data:
+    driver: local  
   keycloak_data:
     driver: local
   postgres:
