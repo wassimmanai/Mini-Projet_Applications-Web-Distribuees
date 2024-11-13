@@ -7,8 +7,9 @@ import java.util.List;
 public interface UserIService {
 
     List<User> retrieveAllUsers();
-    User retrieveUser(Long id);
+    User retrieveUser(Long userId);
     User addUser(User user);
-    void removeUser(Long id);
+    void removeUser(Long userId);
     User modifyUser(User user);
+
 }

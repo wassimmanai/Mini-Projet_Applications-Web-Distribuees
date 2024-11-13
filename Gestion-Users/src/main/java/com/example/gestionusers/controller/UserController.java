@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+//import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -16,26 +17,23 @@ public class UserController {
 
     private final UserService userService;
 
-    // 1. Retrieve all users
+    // 1. Get all users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.retrieveAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // 2. Retrieve a user by ID
+    // 2. Get a user by ID
+    //@PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
-        User user = userService.retrieveUser(id);
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<User> getUserById(@PathVariable("id") Long userId) {
+        User user = userService.retrieveUser(userId);
+        return user != null ? new ResponseEntity<>(user, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     // 3. Add a new user
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<User> addUser(@RequestBody User user) {
         User newUser = userService.addUser(user);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
@@ -43,9 +41,9 @@ public class UserController {
 
     // 4. Update an existing user
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User updatedUser) {
-        if (userService.retrieveUser(id) != null) {
-            updatedUser.setId(id);  // Set the ID on the updated user
+    public ResponseEntity<User> updateUser(@PathVariable("id") Long userId, @RequestBody User updatedUser) {
+        if (userService.retrieveUser(userId) != null) {
+            updatedUser.setUserId(userId);  // Set the ID for the updated user
             User user = userService.modifyUser(updatedUser);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
@@ -54,10 +52,11 @@ public class UserController {
     }
 
     // 5. Delete a user
+    //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
-        if (userService.retrieveUser(id) != null) {
-            userService.removeUser(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long userId) {
+        if (userService.retrieveUser(userId) != null) {
+            userService.removeUser(userId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
