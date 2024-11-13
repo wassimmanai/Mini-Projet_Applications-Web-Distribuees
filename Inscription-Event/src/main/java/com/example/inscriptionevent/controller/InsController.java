@@ -1,5 +1,6 @@
 package com.example.inscriptionevent.controller;
 
+import com.example.inscriptionevent.entity.Comment;
 import com.example.inscriptionevent.entity.InsEvent;
 import com.example.inscriptionevent.service.InsService;
 import lombok.AllArgsConstructor;
@@ -16,14 +17,26 @@ public class InsController {
 
     private final InsService insService;
 
-    // 1. Récupérer toutes les inscriptions
+    // Endpoint to get all comments
+    @GetMapping("/comments")
+    public List<Comment> getAllComments() {
+        return insService.getAllComments();
+    }
+
+    // Endpoint to get a specific comment by its ID
+    @GetMapping("/comments/{id}")
+    public Comment getCommentById(@PathVariable("id") Long id) {
+        return insService.getCommentById(id);
+    }
+
+    // Endpoint to get all InsEvents
     @GetMapping
     public ResponseEntity<List<InsEvent>> getAllInsEvents() {
         List<InsEvent> insEvents = insService.retrieveAllInsEvents();
         return new ResponseEntity<>(insEvents, HttpStatus.OK);
     }
 
-    // 2. Récupérer une inscription par ID
+    // Endpoint to get a specific InsEvent by its ID
     @GetMapping("/{id}")
     public ResponseEntity<InsEvent> getInsEventById(@PathVariable("id") Long idIns) {
         InsEvent insEvent = insService.retrieveInsEvents(idIns);
@@ -34,19 +47,19 @@ public class InsController {
         }
     }
 
-    // 3. Ajouter une nouvelle inscription
+    // Endpoint to add a new InsEvent
     @PostMapping
     public ResponseEntity<InsEvent> addInsEvent(@RequestBody InsEvent insEvent) {
         InsEvent newInsEvent = insService.addInsEvents(insEvent);
         return new ResponseEntity<>(newInsEvent, HttpStatus.CREATED);
     }
 
-    // 4. Modifier une inscription existante
+    // Endpoint to update an existing InsEvent
     @PutMapping("/{id}")
     public ResponseEntity<InsEvent> updateInsEvent(@PathVariable("id") Long idIns, @RequestBody InsEvent updatedInsEvent) {
-        // Vérifier si l'inscription existe
+        // Check if the InsEvent exists
         if (insService.retrieveInsEvents(idIns) != null) {
-            updatedInsEvent.setIdIns(idIns);  // Définit l'ID sur l'inscription mise à jour
+            updatedInsEvent.setIdIns(idIns);  // Set the ID on the updated InsEvent
             InsEvent insEvent = insService.modifyInsEvents(updatedInsEvent);
             return new ResponseEntity<>(insEvent, HttpStatus.OK);
         } else {
@@ -54,7 +67,7 @@ public class InsController {
         }
     }
 
-    // 5. Supprimer une inscription
+    // Endpoint to delete an InsEvent
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInsEvent(@PathVariable("id") Long idIns) {
         if (insService.retrieveInsEvents(idIns) != null) {

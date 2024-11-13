@@ -30,7 +30,7 @@ services:
     container_name: mysqldb
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: inscription
+      MYSQL_DATABASE: inscription,gestionusers
     ports:
       - "3306:3306"
     networks:
@@ -61,7 +61,30 @@ services:
       stdin_open: true
       tty: true
   
-  
+  user:
+    image: wassimmanai/app:latest
+    restart: on-failure
+    ports:
+      - "8078:8078"  # Adjusted based on application.properties
+    depends_on:
+      - discovery-server
+      - mysqldb
+    networks:
+      - app-network
+    environment:
+      SPRING_APPLICATION_JSON: '{
+            "spring.application.name": "Gestion-Users",
+            "server.port": "8078",
+            "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/gestionusers?createDatabaseIfNotExist=true",
+            "spring.datasource.username" : "root",
+            "spring.datasource.password" : "",
+            "spring.jpa.hibernate.ddl-auto" : "update",
+            "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQLDialect",
+            "eureka.client.serviceUrl.defaultZone": "http://discovery-server:8761/eureka",
+            "springdoc.swagger-ui.enabled": "true"
+          }'
+      stdin_open: true
+      tty: true
    
   microservice-forum:
     restart: on-failure
@@ -81,17 +104,17 @@ services:
   microservice-event:
     restart: on-failure
     container_name: microservice-event
-    build: ./microservice-quiz
+    build: ./gestion-event
     ports:
-      - "8025:8025"
+      - "8066:8066"
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8090/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     networks:
       - app-network
     depends_on:
       - discovery-server
     volumes:
-      - quiz-db-data:/app/Database/Data
+      - event-db-data:/app/Database/Data
     
 
   events:
