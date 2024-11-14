@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: tn.espritclubs.microservice_forum.MicroserviceForumApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.40 s -- in tn.espritclubs.microservice_forum.MicroserviceForumApplicationTests
