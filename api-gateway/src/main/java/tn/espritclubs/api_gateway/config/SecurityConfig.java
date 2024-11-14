@@ -30,11 +30,11 @@ public class SecurityConfig {
                             return config;
                         }))
                 .authorizeExchange(exchange -> exchange
-                       // .pathMatchers("/eureka/**")
-                       // .permitAll()
-                      //  .anyExchange()
-                      //  .authenticated())
-                        .anyExchange().permitAll())
+                        .pathMatchers("/eureka/**")
+                        .permitAll()
+                        .anyExchange()
+                        .authenticated())
+                   //     .anyExchange().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
         return serverHttpSecurity.build();

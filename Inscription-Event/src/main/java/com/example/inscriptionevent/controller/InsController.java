@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
+@CrossOrigin(origins ="*" )
 @RequestMapping("/inscriptions")
 @AllArgsConstructor
 public class InsController {
