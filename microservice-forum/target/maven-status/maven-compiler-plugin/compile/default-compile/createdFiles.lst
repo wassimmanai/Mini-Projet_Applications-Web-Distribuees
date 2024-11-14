@@ -1,0 +1,6 @@
+tn\espritclubs\microservice_forum\services\ICommentService.class
+tn\espritclubs\microservice_forum\MicroserviceForumApplication.class
+tn\espritclubs\microservice_forum\services\CommentService.class
+tn\espritclubs\microservice_forum\controller\CommentController.class
+tn\espritclubs\microservice_forum\entities\Comment.class
+tn\espritclubs\microservice_forum\repositores\CommentRepository.class
